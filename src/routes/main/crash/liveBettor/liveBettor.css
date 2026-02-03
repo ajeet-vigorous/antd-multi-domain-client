@@ -1,0 +1,71 @@
+.live-bettors {
+  display: flex;
+  align-items: center;
+  background-color: #000;
+  padding: 4px 8px;
+  border-radius: 999px;
+  position: relative;
+  width: fit-content;
+}
+.live-bettors-betlist{
+  align-items: center;
+  background-color: #000;
+  padding: 4px 8px;
+  border-radius: 10px;
+  position: relative;
+  width: fit-content;
+}
+.avatarliveBettors {
+  display: flex;
+  position: relative;
+
+  
+}
+.bottom-left-plane {
+  position: absolute;
+  
+}
+
+.avatarliveBettor {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 0.5px solid #00c200; /* green border */
+  margin-left: -8px;
+  background-color: #222;
+  /* object-fit: cover; */
+  z-index: 1;
+}
+@media (max-width: 620px) {
+  .avatarliveBettor {
+  width: 25px;
+  height: 25px;
+  }
+
+}
+.avatarliveBettor:first-child {
+  margin-left: 0;
+  z-index: 3;
+}
+
+.avatarliveBettor:nth-child(2) {
+  z-index: 2;
+}
+
+.avatarliveBettor:nth-child(3) {
+  z-index: 1;
+}
+
+.count {
+  color: white;
+  font-weight: bold;
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.count-betlist{
+ color: #9ea0a3;
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 2px;
+}

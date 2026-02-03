@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/static/css/main.813e7e56.chunk.css",
+    "main.js": "/static/js/main.f2136169.chunk.js",
+    "runtime-main.js": "/static/js/runtime-main.a3e6af07.js",
+    "static/css/2.3f761e74.chunk.css": "/static/css/2.3f761e74.chunk.css",
+    "static/js/2.35bcdebf.chunk.js": "/static/js/2.35bcdebf.chunk.js",
+    "index.html": "/index.html",
+    "static/js/2.35bcdebf.chunk.js.LICENSE.txt": "/static/js/2.35bcdebf.chunk.js.LICENSE.txt",
+    "static/media/styles.css": "/static/media/gaxon.9f281cc5.eot",
+    "static/media/background.ee4fcaee.mp3": "/static/media/background.ee4fcaee.mp3",
+    "static/media/notifications.css": "/static/media/notification.c5d9251e.ttf",
+    "static/media/plane-crash.684eb0c1.mp3": "/static/media/plane-crash.684eb0c1.mp3",
+    "static/media/slick-theme.css": "/static/media/slick.c94f7671.ttf",
+    "static/media/sprite-flags-24x24.css": "/static/media/sprite-flags-24x24.6bd080ea.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.a3e6af07.js",
+    "static/css/2.3f761e74.chunk.css",
+    "static/js/2.35bcdebf.chunk.js",
+    "static/css/main.813e7e56.chunk.css",
+    "static/js/main.f2136169.chunk.js"
+  ]
+}
