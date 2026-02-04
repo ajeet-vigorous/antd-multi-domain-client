@@ -62,7 +62,7 @@ const BettingCard2 = ({ bettingData, aviatorSocketData }) => {
 
   const handleBetPlace = async (newbetPlaceData, passedData) => {
     console.log(aviatorSocketData, "aviatorSocketData");
-    
+
     if (!aviatorSocketData?.betStatus) {
       message.error(aviatorSocketData?.setting?.errorMessage);
       return;
@@ -94,9 +94,9 @@ const BettingCard2 = ({ bettingData, aviatorSocketData }) => {
 
     try {
       if (passedData?.gameStatus === "open" && passedData?.isBetting) {
-        console.log("eeeeeeeeeeeeeeeee");
+
         // if (placedRounds.includes(roundId)) return;
-        console.log("ffffffffffffff");
+
         const betResult = await dispatch(aviatorPlaceBets2(reqData));
         if (!betResult.error) setPlacedRounds((prev) => [...prev, roundId]);
       } else if (
@@ -130,7 +130,7 @@ const BettingCard2 = ({ bettingData, aviatorSocketData }) => {
     if (!data?.isBetting && data?.gameStatus === "running" && aviatorBetFlag2 && !aviatorOneTimeCashout2)
       return "Cashout";
     if (data?.gameStatus === "open" && data?.isBetting && aviatorOneTimeBet2)
-      return "CANCEL";
+      return "Waiting";
 
     return "BET";
   };
@@ -139,7 +139,7 @@ const BettingCard2 = ({ bettingData, aviatorSocketData }) => {
     if (!data?.isBetting && data?.gameStatus === "running" && aviatorBetFlag2 && !aviatorOneTimeCashout2)
       return "gx-bg-orange";
     if (data?.gameStatus === "open" && data?.isBetting && aviatorOneTimeBet2)
-      return "gx-bg-red";
+      return "gx-bg-yellow gx-text-black";
     return "gx-bg-green-0";
   };
 
@@ -251,7 +251,7 @@ const BettingCard2 = ({ bettingData, aviatorSocketData }) => {
               Waiting For Next round
             </div>
           </button> : <button
-            // disabled={getButtonLabel() === "WAIT"}
+            disabled={data?.gameStatus === "open" && data?.isBetting && aviatorOneTimeBet2}
             className={`place-bet-button ${getButtonColorClass()}`}
             onClick={() => handleBetPlace(betAmount, data)}
           >

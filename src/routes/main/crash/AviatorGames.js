@@ -160,6 +160,9 @@ import ChatBox from "./chatBox/ChatBox";
 import BetLists from "./BetLists/BetLists";
 import { getAviatorSocket, disconnectAviatorSocket } from "./aviator/aviatorSocket";
 import { httpPost } from "../../../http/http";
+import { casinoRoundResult } from "../../../appRedux/actions/User";
+import { useDispatch } from "react-redux";
+import LoadingScreen from "./LoadingScreen";
 
 const AviatorGame = () => {
     const { gameName, gameId } = useParams();
@@ -167,8 +170,8 @@ const AviatorGame = () => {
     const [crashPoint, setCrashPoint] = useState([]);
     const [aviatorSocketData, setAviatorSocketData] = useState(null);
     const [lastCrashValue, setLastCrashValue] = useState([]);
+    const dispatch = useDispatch();
 
-    // 👇 Fetch config for socket on mount
     useEffect(() => {
         const fetchSocketConfig = async () => {
             try {
@@ -184,14 +187,10 @@ const AviatorGame = () => {
         fetchSocketConfig();
     }, []);
 
-    // 👇 Set up socket when data available
     useEffect(() => {
         if (!aviatorSocketData || !aviatorSocketData.socketURL) return;
-
         const socket = getAviatorSocket({ aviatorSocketData });
-
         socket.emit("joinGame", { gameName: "aviator" });
-
         socket.on("crashValue", (data) => {
             try {
                 const gamesData = JSON.parse(data);
@@ -222,18 +221,16 @@ const AviatorGame = () => {
             return;
         }
 
-        
-
         try {
-            const res = await fetch(`${aviatorSocketData.socketURL}/v1/game/getRoundIdDetails`, {
+            const res = await fetch(`${aviatorSocketData.socketURL}/v1/game/lastRounds`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ gameType: "avaitor" })
             });
 
             const json = await res.json();
-            const crashValues = json?.data?.data?.map((item) => item.creashValue);
-
+            const crashValues = json?.data?.map((item) => item.creashValue);
+           
             if (crashValues?.length > 0) {
                 setCrashPoint(crashValues);
             } else {
@@ -249,6 +246,11 @@ const AviatorGame = () => {
             setLastCrashValue(crashPoint);
         }
     }, [crashPoint]);
+
+    // Add a condition to check if the data has been loaded
+    if (!dataa || Object.keys(dataa).length === 0 || !aviatorSocketData) {
+        return <LoadingScreen />; // Show loading screen if data isn't available
+    }
 
     return (
         <Row justify={'center'} className="gx-mx-0 gx-px-0" style={{ background: 'black' }}>

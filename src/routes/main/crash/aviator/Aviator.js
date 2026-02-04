@@ -9,7 +9,7 @@ import { IoIosCloseCircle, IoIosVolumeOff, IoIosClose } from "react-icons/io";
 import BirdCanvas from "./BirdCanvas";
 import backgroundSound from '../audio/background.mp3'
 import planeCrash from '../audio/plane-crash.mp3'
-import { AiFillSound  } from "react-icons/ai";
+import { AiFillSound } from "react-icons/ai";
 import { FaVolumeOff } from "react-icons/fa6";
 
 

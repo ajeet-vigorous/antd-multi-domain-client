@@ -110,7 +110,7 @@ const BettingCard = ({ bettingData, aviatorSocketData }) => {
     // if (data?.gameStatus === "open" && data?.isBetting && !aviatorOneTimeBet)
     //   return "BET";
     if (data?.gameStatus === "open" && data?.isBetting && aviatorOneTimeBet)
-      return "CANCEL";
+      return "Waiting";
 
     return "BET";
   };
@@ -121,7 +121,7 @@ const BettingCard = ({ bettingData, aviatorSocketData }) => {
     // if (data?.gameStatus === "open" && data?.isBetting && !aviatorOneTimeBet)
     //   return "gx-bg-green-0";
     if (data?.gameStatus === "open" && data?.isBetting && aviatorOneTimeBet)
-      return "gx-bg-red";
+      return "gx-bg-yellow gx-text-black";
     return "gx-bg-green-0";
   };
 
@@ -232,7 +232,7 @@ const BettingCard = ({ bettingData, aviatorSocketData }) => {
               Waiting For Next round
             </div>
           </button> : <button
-            // disabled={getButtonLabel() === "WAIT"}
+            disabled={data?.gameStatus === "open" && data?.isBetting && aviatorOneTimeBet}
             className={`place-bet-button ${getButtonColorClass()}`}
             onClick={() => handleBetPlace(betAmount, data)}
           >
