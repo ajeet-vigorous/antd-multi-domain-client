@@ -210,7 +210,7 @@ const domainSettings = {
 
 
   "balaji12.com": {
-     title: "BALAJI12",
+    title: "BALAJI12",
     favicon: "/assets/images/Balalji12.png",
     logo: "/assets/images/Balalji12.png",
     SOCKET_URL: "https://api.balaji12.com/",
@@ -239,7 +239,7 @@ const domainSettings = {
   },
 
 
-    "star99.pro": {
+  "star99.pro": {
     title: "STAR99",
     favicon: "/favicon.ico",
     logo: "/assets/images/star99.png",
@@ -269,19 +269,19 @@ const domainSettings = {
   },
 
   "defult": {
-       title: "BALAJI12",
-    favicon: "/assets/images/Balalji12.png",
-    logo: "/assets/images/Balalji12.png",
-    SOCKET_URL: "https://api.balaji12.com/",
+    title: "LION99",
+    favicon: "/favicon.ico",
+    logo: "/assets/images/lion99.png",
+    SOCKET_URL: "https://socket.trovetown.co/",
     apiurl: "https://api.lion99.pro/v1/",
-    domainName: "BALAJI12",
+    domainName: "LION99",
     sportFlag: false,
     footerFlag: false,
-    websiteName: "BALAJI12.COM",
+    websiteName: "LION99.PRO",
     websiteName2: "",
-    socketDomain: "balaji12.com",
-    "--nav-dark-bg": "#374F68",
-    "--nav-dark-bg-revers": "#001F3F",
+    socketDomain: "lion99.pro",
+    "--nav-dark-bg": "#A19203",
+    "--nav-dark-bg-revers": "#A19203",
     noFancyMatchDetails: false,
     internationalCasino: false,
     virtuleGame: false,

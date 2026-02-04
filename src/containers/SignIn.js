@@ -87,7 +87,7 @@ const SignIn = () => {
             <div className="  gx-bg-flex gx-flex-column ">
               <div className=" gx-w-100">
                 <div className="gx-px-5 gx-py-2">
-                  <img src={settings.logo} alt="Neature" height={100} width={500}/>
+                  <img src={settings.logo} alt="Neature" height={180} width={500}/>
                 </div>
               </div>
 

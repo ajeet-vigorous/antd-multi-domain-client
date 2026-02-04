@@ -90,7 +90,7 @@ const Main = ({match}) => (
     <Route path={`${match.url}/matka`} component={Matka} />
     <Route path={`${match.url}/matka-list`} component={MatkaList} />
     <Route path={`${match.url}/matka-bet-list`} component={MatkaBetLists} />
-    <Route path={`${match.url}/satta-matka/:marketEvent?`} component={SattaMatka} />
+    <Route path={`${match.url}/satta-matkas/:marketEvent?`} component={SattaMatka} />
 
     <Route path={`${match.url}/matka-type/:matkaName?/:matkaEventId?`} component={MatkaNewDesgin} />
     <Route path={`${match.url}/matka-single/:matkaEventId?`} component={SingleMatka} />
