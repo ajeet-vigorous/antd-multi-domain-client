@@ -162,7 +162,7 @@ const Topbar = () => {
         {modalOpen && <Rules />}
         <div>
           <Link to="/main/dashboard" className=" gx-pointer">
-            <img alt="" src={settings?.logo} width={90} height={70} /></Link>
+            <img alt="" src={settings?.logo} width={90} height={50} /></Link>
         </div>
         <div className='gx-text-white'>
           <span>{client?.username} ({client?.name})</span><br />
