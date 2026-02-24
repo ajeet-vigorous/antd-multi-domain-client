@@ -17,6 +17,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import {
   ErrorModalClose,
+  getClientSportsBetsList,
   getMatchDetail,
   getSportsBetsList,
   oddsPlaceBets,
@@ -36,10 +37,11 @@ import { httpPatch } from "../../../http/http";
 import { NotificationManager } from "react-notifications";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import settings from "../../../domainConfig";
 
 
 
-const MatchDetails = () => {
+const MatchDetailsOther = () => {
   const { marketId, eventId, cacheUrls } = useParams();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -61,16 +63,21 @@ const MatchDetails = () => {
   const [matchBetChipPlaceModal, setMatchBetChipPlaceModal] = useState(false);
   const [showBetPlaceModal, setShowBetPlaceModal] = useState(false);
   const [totalSessionPlusMinus, setTotalSessionPlusMinus] = useState()
+  const [positionObj, setPositionObj] = useState({});
   const {
     matchDetailsResponse,
     userpositionbymarketId,
     matchList,
     sportsBetsList,
     processingBet,
+    clientSportsBetsList,
     betStatus,
   } = useSelector((state) => state.UserReducer);
 
-  const matchBetPlaceModal = localStorage.getItem("matchBetPlaceModal") ? JSON.parse(localStorage.getItem("matchBetPlaceModal")) : false 
+  const
+    dfsdfsdsd = useSelector((state) => state.UserReducer);
+  
+  const matchBetPlaceModal = localStorage.getItem("matchBetPlaceModal") ? JSON.parse(localStorage.getItem("matchBetPlaceModal")) : false
 
   // const decodedCacheUrl = decodeURIComponent(cacheUrls);
   const scrollToRef = useRef(null);
@@ -87,8 +94,8 @@ const MatchDetails = () => {
 
 
   const matchIframeUrl = matchlistfromLocalStorage?.find(({ marketId: id }) => id === marketId)?.scoreIframe ?? null;
- 
-  
+
+
 
   const handleCloseCompletedModal = () => {
     setCompltedModal(false);
@@ -108,45 +115,45 @@ const MatchDetails = () => {
   const socketRef = useRef(null);
 
   const setupAsyncActions = async () => {
-    
+
     getMarketCacheUrl(matchCacheUrl)
     getMarketEventUrl(eventCacheUrl)
     setDataFromLocalstorage(marketId)
-    
+
     getMatchDataByMarketIdWise();
-    getuserPositionByMarketIdWise();
+    // getuserPositionByMarketIdWise();
     fetchBetLists();
-   
+
   };
 
 
-  const setDataFromLocalstorage = async(marketId)=>{
-    let data =  localStorage.getItem(`${marketId}_BookmakerData`)
-    if(data){
-     setMatchScoreDetails(JSON.parse(data).result);
-    }else{
-     setMatchScoreDetails("");
+  const setDataFromLocalstorage = async (marketId) => {
+    let data = localStorage.getItem(`${marketId}_BookmakerData`)
+    if (data) {
+      setMatchScoreDetails(JSON.parse(data).result);
+    } else {
+      setMatchScoreDetails("");
     }
-   }
-   
+  }
 
 
-   const setMatchDataFromLocalstorage = async(eventId)=>{
-    let data =  localStorage.getItem(`${eventId}_MatchOddsData`)
+
+  const setMatchDataFromLocalstorage = async (eventId) => {
+    let data = localStorage.getItem(`${eventId}_MatchOddsData`)
 
 
-    if(!data){
+    if (!data) {
       return null
 
-      
+
     }
-    else{
+    else {
       setsocketDetails(JSON.parse(data));
     }
-   }
+  }
 
-   
- 
+
+
 
   const getMatchDataByMarketIdWise = async () => {
     let reqData = {
@@ -154,11 +161,11 @@ const MatchDetails = () => {
     };
     dispatch(getMatchDetail(reqData));
   };
-  useEffect(() => {
-    if (betStatus === true) {
-      getuserPositionByMarketIdWise();
-    }
-  }, [betStatus]);
+  // useEffect(() => {
+  //   if (betStatus === true) {
+  //     getuserPositionByMarketIdWise();
+  //   }
+  // }, [betStatus]);
 
   const socketUrl1 = matchlistfromLocalStorage?.find(
     (el) => el.marketId === marketId
@@ -172,14 +179,14 @@ const MatchDetails = () => {
     setupAsyncActions(marketId);
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-     
+
         if (!isConnected) {
           getMarketCacheUrl(matchCacheUrl)
           getMarketEventUrl(eventCacheUrl)
           connectSocket(socketUrl1);
         }
       } else if (document.visibilityState === "hidden") {
-    
+
         cleanupWebSocket();
       }
     };
@@ -194,17 +201,28 @@ const MatchDetails = () => {
       clearInterval(intervalIdRef.current);
     };
   }, [eventId, marketId]);
+  const hasRedirectedRef = useRef(false);
+
+useEffect(() => {
+  if (
+    matchDetailsResponse?.status === "COMPLETED" &&
+    !hasRedirectedRef.current
+  ) {
+    hasRedirectedRef.current = true;
+    window.location.href = "/main/dashboard";
+  }
+}, [matchDetailsResponse?.status]);
+
 
   useEffect(() => {
     if (!matchDetailsResponse) return;
 
-    if(matchDetailsResponse?.status !== 'INPLAY'){
-      history.push('/main/dashboard')
-
-    }
+   
     // Set the socket URL
     // setSocketUrl(matchDetailsResponse.socketUrl);
     clearInterval(intervalIdRef.current);
+
+    // matchDetailsResponse.socketPerm = true
     if (matchDetailsResponse.socketPerm) {
       if (
         !socketRef.current ||
@@ -232,59 +250,56 @@ const MatchDetails = () => {
     socketRef.current = io(socketUrl, {
       transports: ["websocket"],
       reconnection: false,
+      // reconnectionAttempts: Infinity, 
+      // reconnectionDelay: 1000, 
+      // reconnectionDelayMax: 5000, 
+      // randomizationFactor: 0.5
     });
 
     socketRef.current.on("connect", () => {
       setIsConnected(true);
       socketRef.current.emit("marketByEvent", eventId);
+
     });
 
     socketRef.current.on(eventId, (data) => {
-      
-      
       localStorage.setItem(`${eventId}_MatchOddsData`, data)
       setsocketDetails(JSON.parse(data));
     });
 
     let userID = JSON.parse(localStorage.getItem("user_id_tvs99"));
-      let token_Id = userID?.token;
-      let socketSessionBet = getSocket();
+    let token_Id = userID?.token;
+    let socketSessionBet = getSocket();
 
-      if (!socketSessionBet || socketSessionBet == null) {
-        socketSessionBet = initSocket(token_Id);
+    if (!socketSessionBet || socketSessionBet == null) {
+      socketSessionBet = initSocket(token_Id);
+    }
+
+    socketSessionBet.on('sessionBetUpdate', (data) => {
+
+      fetchBetLists(true, false, data.marketId)
+    });
+
+    socketSessionBet.on('marketReload', (data) => {
+      if (marketId === data.marketId) {
+        window.location.reload()
       }
 
-      socketSessionBet.on('sessionBetUpdate', (data) => {
-
-        fetchBetLists(true,false,data.marketId)
-      });
-      
-      socketSessionBet.on('marketReload', (data) => {
-  
-        if(marketId === data.marketId){
-          window.location.reload()
-        }
-      
-      });
-
-
+    });
+    // socketPermLoca === false
     if (socketPermLoca === true) {
       socketRef.current.emit("JoinRoom", marketId);
+      
       socketRef.current.on(marketId, (data) => {
-   
-        
         localStorage.setItem(`${marketId}_BookmakerData`, data)
         setMatchScoreDetails(JSON.parse(data).result);
       });
     }
   };
   const getMarketCacheUrl = async (cacheUrl) => {
-    
+
     try {
       const response = await axios.get(cacheUrl);
-
-    
-    
       localStorage.setItem(`${marketId}_BookmakerData`, JSON.stringify(response.data))
       setMatchScoreDetails(response?.data?.result);
     } catch (error) {
@@ -292,18 +307,15 @@ const MatchDetails = () => {
       console.error("Error fetching market cache URL:", error);
     }
   };
+
   const getMarketEventUrl = async (eventurl) => {
     try {
       const response = await axios.get(eventurl);
-      
-     
-      
-      
-      if(response?.data?.data){
+      if (response?.data?.data) {
         localStorage.setItem(`${eventId}_MatchOddsData`, JSON.stringify(response?.data?.data))
         setsocketDetails(response?.data?.data);
       }
-      
+
     } catch (error) {
       setMatchScoreDetails(null);
       console.error("Error fetching market cache URL:", error);
@@ -333,8 +345,8 @@ const MatchDetails = () => {
     dispatch(userPositionByMarketId(reqData));
   };
 
-  const fetchBetLists = async (fancyBet=true , oddsBet=true , marketIdPass) => {
-    if(marketIdPass && marketIdPass!=marketId){
+  const fetchBetLists = async (fancyBet = true, oddsBet = true, marketIdPass) => {
+    if (marketIdPass && marketIdPass != marketId) {
       return false
     }
     try {
@@ -342,9 +354,10 @@ const MatchDetails = () => {
         fancyBet: true,
         oddsBet: true,
         marketId: marketId,
+        // isDeleted: 0,
         // isDeclare: false,
       };
-      dispatch(getSportsBetsList(BetListData));
+      dispatch(getClientSportsBetsList(BetListData));
     } catch (error) {
       console.error("Error fetching bet lists:", error);
       throw error;
@@ -481,15 +494,17 @@ const MatchDetails = () => {
   const [oddsbetdata, setOddsbetData] = useState();
   const [incomletedFancy, setIncompletedFancy] = useState();
   const [compltedFancy, setCompletedFancy] = useState();
+
   useEffect(() => {
-    if (sportsBetsList) {
-      const sortedOddsBetData = sportsBetsList?.data?.oddsBetData
-        ? sportsBetsList?.data?.oddsBetData
+
+    if (clientSportsBetsList) {
+      const sortedOddsBetData = clientSportsBetsList?.data?.oddsBetData
+        ? clientSportsBetsList?.data?.oddsBetData
           .slice()
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         : [];
-      const filteredFancyBetData = sportsBetsList?.data?.fancyBetData
-        ? sportsBetsList?.data?.fancyBetData.sort(
+      const filteredFancyBetData = clientSportsBetsList?.data?.fancyBetData
+        ? clientSportsBetsList?.data?.fancyBetData.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         )
         : [];
@@ -515,6 +530,28 @@ const MatchDetails = () => {
 
         showCompletedFancy.push(data);
       });
+
+
+      const finalPositionInfo = {};
+      sortedOddsBetData && sortedOddsBetData.forEach(item => {
+        const positionInfo = item.positionInfo;
+
+        for (const key in positionInfo) {
+          if (positionInfo.hasOwnProperty(key)) {
+            if (!finalPositionInfo[key]) {
+              finalPositionInfo[key] = 0;
+            }
+            finalPositionInfo[key] += positionInfo[key];
+          }
+        }
+      });
+
+
+      setPositionObj(finalPositionInfo)
+
+
+
+
       setOddsbetData(sortedOddsBetData);
       setCompletedFancy(showCompletedFancy);
       setIncompletedFancy(
@@ -523,10 +560,10 @@ const MatchDetails = () => {
           : []
       );
     }
-  }, [sportsBetsList]);
+  }, [clientSportsBetsList]);
   ////////////////////-----------------------------placing bets ----------------------//////////////////
   useEffect(() => {
-    
+
     const maxCoinData = matchDetailsResponse?.maxMinCoins
       ? JSON.parse(matchDetailsResponse?.maxMinCoins)
       : {
@@ -535,7 +572,7 @@ const MatchDetails = () => {
         maximum_session_bet: null,
         minimum_session_bet: null,
       };
-   
+
 
     setminMaxCoins({
       max: maxCoinData?.maximum_match_bet,
@@ -548,23 +585,24 @@ const MatchDetails = () => {
 
 
     setIsTieCoin({
-      max: maxCoinData?.maximum_tie_coins > 0 ?  maxCoinData?.maximum_tie_coins :  maxCoinData?.maximum_match_bet,
+      max: maxCoinData?.maximum_tie_coins > 0 ? maxCoinData?.maximum_tie_coins : maxCoinData?.maximum_match_bet,
       min: maxCoinData?.minimum_match_bet,
     });
 
     setIsTossCoin({
-      max: maxCoinData?.maximum_toss_coins > 0 ?  maxCoinData?.maximum_toss_coins :  maxCoinData?.maximum_match_bet,
+      max: maxCoinData?.maximum_toss_coins > 0 ? maxCoinData?.maximum_toss_coins : maxCoinData?.maximum_match_bet,
       min: maxCoinData?.minimum_match_bet,
     });
 
     setIsMatchCoin({
-      max: maxCoinData?.maximum_matchOdds_coins > 0 ?  maxCoinData?.maximum_matchOdds_coins :  maxCoinData?.maximum_match_bet,
+      max: maxCoinData?.maximum_matchOdds_coins > 0 ? maxCoinData?.maximum_matchOdds_coins : maxCoinData?.maximum_match_bet,
       min: maxCoinData?.minimum_match_bet,
     });
 
-    
+
 
   }, [matchDetailsResponse]);
+
   useEffect(() => {
     if (processingBet === false) {
       fetchBetLists();
@@ -620,7 +658,7 @@ const MatchDetails = () => {
             : betModalData.betType + "",
       };
       if (
-    
+
         // reqData.amount >= sessionCoin.min &&
         reqData.amount > 0
       ) {
@@ -645,6 +683,8 @@ const MatchDetails = () => {
   ////////////////////////////----------------------- Bookmaker Data --------------------//////////////////
 
   const data = [];
+
+
   if (matchScoreDetails) {
     const sortedSelectionIdData = matchScoreDetails?.team_data
       ?.slice() // Create a copy of the array
@@ -682,20 +722,19 @@ const MatchDetails = () => {
       width: "60%",
       render: (text, record, index) => (
         <div className="gx-bg-flex gx-text-black">
-          <div className=" gx-font-weight-semi-bold gx-text-uppercase">
+          <div className="gx-font-weight-semi-bold gx-text-uppercase">
             {text}
           </div>
+
           <div
-            className={`gx-font-weight-semi-bold ${userpositionbymarketId?.oddsPosition?.find(
-              (item) => item?._id === record?.selectionid
-            )?.Position > 0
+
+            className={`gx-font-weight-semi-bold ${positionObj[record?.selectionid] > 0
               ? "gx-text-primary"
-              : "gx-text-red"
+              : positionObj[record?.selectionid] < 0 ? "gx-text-red" : 'gx-text-light-grey'
               } `}
           >
-            {userpositionbymarketId?.oddsPosition
-              ?.find((item) => item?._id === record?.selectionid)
-              ?.Position.toFixed(2)}
+            {positionObj[record?.selectionid] ? (Math.floor(Number(positionObj[record?.selectionid]) * 100) / 100).toFixed(2) : 0}
+
           </div>
         </div>
       ),
@@ -835,13 +874,15 @@ const MatchDetails = () => {
   // }
 
 
-  
+
   const oddsData = [];
+
+
   if (socketDetails) {
     // if(!socketDetails?.find((el) => el?.marketType === "Match Odds" )){
     //   return
     // }
-    const matchoddsData = socketDetails?.find((el) => el?.marketType === "Match Odds" );
+    const matchoddsData = socketDetails?.find((el) => el?.marketType === "Match Odds");
     const betfairmatchoddsMarketId = matchoddsData?.marketId;
 
     //   const sortedSelectionIdData = matchoddsData?.selectionIdData?.slice()  // Create a copy of the array
@@ -870,7 +911,7 @@ const MatchDetails = () => {
             ?.runners?.find((item) => item.selectionId === ele.selectionId)
             ?.ex?.availableToBack[0]?.size?.toFixed(2),
           oddsposition:
-            returnDataObject[ele.selectionId] !== 0
+            returnDataObject[ele.selectionId] != 0
               ? returnDataObject[ele.selectionId]
               : "-",
           betfairMarketId: betfairmatchoddsMarketId,
@@ -899,14 +940,16 @@ const MatchDetails = () => {
       width: "60%",
       render: (text, record, index) => (
         <div className="gx-bg-flex">
-          <div className=" gx-font-weight-semi-bold gx-text-black gx-text-uppercase">
+          <div className=" gx-font-weight-semi-bold gx-fs-sm gx-text-black gx-text-uppercase">
             {text}
           </div>
           <div
-            className={`gx-font-weight-semi-bold ${record.oddsposition > 0 ? "gx-text-primary" : "gx-text-red"
+            className={`gx-font-weight-semi-bold ${positionObj[record?.selectionId] > 0
+              ? "gx-text-primary"
+              : positionObj[record?.selectionId] < 0 ? "gx-text-red" : 'gx-text-light-grey'
               }`}
           >
-            {record.oddsposition}
+            {positionObj[record?.selectionId] ? (Math.floor(Number(positionObj[record?.selectionId]) * 100) / 100).toFixed(2) : 0}
           </div>
         </div>
       ),
@@ -934,7 +977,7 @@ const MatchDetails = () => {
               selectionId: record.selectionId,
               type: "NO",
               betType: "L",
-              runs:record.khaaisize,
+              runs: record.khaaisize,
               betForMarketId: marketId,
               marketId: marketId,
               eventId: eventId,
@@ -977,7 +1020,7 @@ const MatchDetails = () => {
               selectionId: record.selectionId,
               type: "YES",
               betType: "K",
-              runs:record.lgaaisize,
+              runs: record.lgaaisize,
               betForMarketId: marketId,
               marketId: marketId,
               eventId: eventId,
@@ -1035,7 +1078,7 @@ const MatchDetails = () => {
             ?.runners?.find((item) => item.selectionId === ele.selectionId)
             ?.ex?.availableToBack[0]?.size.toFixed(2),
           tiedposition:
-            returnDataObject2[ele.selectionId] !== 0
+            returnDataObject2[ele.selectionId] != 0
               ? returnDataObject2[ele.selectionId]
               : "-",
           betfairMarketId: betfairTiedId,
@@ -1058,12 +1101,12 @@ const MatchDetails = () => {
       width: "60%",
       render: (text, record, index) => (
         <div className="gx-bg-flex gx-text-black">
-          <div className=" gx-font-weight-semi-bold ">{text}</div>
+          <div className=" gx-font-weight-semi-bold">{text}</div>
           <div
-            className={`gx-font-weight-semi-bold ${record.tiedposition > 0 ? "gx-text-primary" : "gx-text-red"
+            className={`gx-font-weight-semi-bold ${positionObj[record?.selectionId] > 0 ? "gx-text-primary" : positionObj[record?.selectionId] < 0 ? "gx-text-red" : 'gx-text-light-grey'
               } `}
           >
-            {record.tiedposition}
+            {positionObj[record?.selectionId] ? (Math.floor(Number(positionObj[record?.selectionId]) * 100) / 100).toFixed(2) : 0}
           </div>
         </div>
       ),
@@ -1092,7 +1135,7 @@ const MatchDetails = () => {
               type: "YES",
               betType: "L",
               run: "0",
-              runs:record.khaaisize,
+              runs: record.khaaisize,
               betForMarketId: marketId,
               marketId: marketId,
               eventId: eventId,
@@ -1135,7 +1178,7 @@ const MatchDetails = () => {
               type: "NO",
               betType: "K",
               run: "0",
-              runs:record.lgaaisize,
+              runs: record.lgaaisize,
               betForMarketId: marketId,
               marketId: marketId,
               eventId: eventId,
@@ -1160,6 +1203,9 @@ const MatchDetails = () => {
   const tossData = [];
   if (matchScoreDetails) {
     // const sortedSelectionIdData = matchScoreDetails?.toss_data
+    // const tossMarket = matchScoreDetails?.toss_data
+    //   ?.slice() // Create a copy of the array
+    //   .sort((a, b) => a.team_name.localeCompare(b.team_name));
 
     const tossMarket = matchScoreDetails?.toss_data;
     if (tossMarket) {
@@ -1179,7 +1225,7 @@ const MatchDetails = () => {
             ?.runners?.find((item) => item.selectionId === ele.selectionId)
             ?.ex?.availableToBack[0]?.size.toFixed(2),
           tossposition:
-            returnDataObject2[ele.selectionid] !== 0
+            returnDataObject2[ele.selectionid] != 0
               ? returnDataObject2[ele.selectionid]
               : "-",
 
@@ -1216,12 +1262,12 @@ const MatchDetails = () => {
       width: "60%",
       render: (text, record, index) => (
         <div className="gx-bg-flex gx-text-black" >
-          <div className=" gx-font-weight-semi-bold ">{text}</div>
+          <div className=" gx-font-weight-semi-bold">{text}</div>
           <div
-            className={`gx-font-weight-semi-bold ${record.tossposition > 0 ? "gx-text-primary" : "gx-text-red"
+            className={`gx-font-weight-semi-bold ${positionObj[record?.selectionId] > 0 ? "gx-text-primary" : positionObj[record?.selectionId] ? "gx-text-red" : 'gx-text-light-grey'
               } `}
           >
-            {record.tossposition}
+            {positionObj[record?.selectionId] ? (Math.floor(Number(positionObj[record?.selectionId]) * 100) / 100).toFixed(2) : 0}
           </div>
         </div>
       ),
@@ -1321,108 +1367,83 @@ const MatchDetails = () => {
 
   //  //////////////////////--------------------------fancy data----------------------/////////////////////////////////
 
-  const data2 = [];
-  if (matchScoreDetails) {
-    // console.log(matchScoreDetails, "matchScoreDetailsmatchScoreDetails11");
-    // const sortedSessions = matchScoreDetails.session?.sort((a, b) => a.session_name - b.session_name);
+  const [data2, setData2] = useState([]);
+  const [expandedRowKeys, setExpandedRowKeys] = useState([]);
+  useEffect(() => {
+    if (matchScoreDetails) {
+    
 
-    // const sortedSessions = matchScoreDetails.session.sort((a, b) => {
-    //   const getInitialChar = (str) => str.trim().charAt(0);
+      const order = {
+        "STRING": 100,
+        "ONLY": 1,
+        "OVER": 2,
+        "FALL OF": 3,
+        "RUN": 4,
+        "PSHIP": 5,
+        "BOUNDARIES": 6,
+        "HOW": 7,
+        "BALLS": 8,
+      };
 
-    //   // Extract starting characters
-    //   const charA = getInitialChar(a.session_name);
-    //   const charB = getInitialChar(b.session_name);
+      const sortedSessions = matchScoreDetails.session.sort((a, b) => {
+        const getSessionType = (sessionName) => {
+          if (sessionName.includes("ONLY")) return "ONLY";
+          if (sessionName.includes("OVER")) return "OVER";
+          if (sessionName.includes("FALL OF")) return "FALL OF";
+          if (sessionName.includes("RUN")) return "RUN";
+          if (sessionName.includes("BOUNDARIES")) return "BOUNDARIES";
+          if (sessionName.includes("HOW")) return "HOW";
+          if (sessionName.includes("BALLS")) return "BALLS";
+          return "STRING"; // Default to STRING if none match
+        };
 
-    //   // Check if characters are digits
-    //   const isDigitA = /^\d/.test(charA);
-    //   const isDigitB = /^\d/.test(charB);
+        const typeA = getSessionType(a.session_name);
+        const typeB = getSessionType(b.session_name);
 
-    //   // If both are digits or both are letters, sort accordingly
-    //   if (isDigitA && isDigitB) {
-    //     // Extract numeric part and compare
-    //     const numA = parseInt(a.session_name.match(/^\d+/)?.[0] || '0', 10);
-    //     const numB = parseInt(b.session_name.match(/^\d+/)?.[0] || '0', 10);
-    //     return numA - numB;
-    //   }
-    //   if (isDigitA && !isDigitB) {
-    //     // Digits come before letters
-    //     return -1;
-    //   }
-    //   if (!isDigitA && isDigitB) {
-    //     // Letters come after digits
-    //     return 1;
-    //   }
+        // Compare based on the defined order
+        let orderComparison = order[typeA] - order[typeB];
 
-    //   // If both start with letters, sort alphabetically
-    //   return a.session_name.localeCompare(b.session_name);
-    // });
+        // If types are the same, further logic for "OVER" cases
+        // If both are of type "OVER", sort based on the numeric value before "OVER"
+        if (typeA === "OVER" && typeB === "OVER") {
+          const numberA = parseInt(a.session_name.split(" ")[0]) || 0; // Extracting number before "OVER"
+          const numberB = parseInt(b.session_name.split(" ")[0]) || 0; // Extracting number before "OVER"
+          return numberA - numberB; // Compare based on numeric values
+        }
 
-    const sortedSessions = matchScoreDetails.session.sort((a, b) => {
-      // Helper functions
-      const getInitialChar = (str) => str.trim().charAt(0);
-      const startsWithDigit = (str) => /^\d/.test(str);
-      const includesOver = (str) => /OVER/.test(str);
-      const getNumericPart = (str) =>
-        parseInt(str.match(/^\d+/)?.[0] || "0", 10);
-      const containsFirst = (str) =>
-        /\b1ST\b|\bFIRST\b/.test(str.toUpperCase());
+        return orderComparison;
+      });
 
-      // Extract session names
-      const nameA = a.session_name;
-      const nameB = b.session_name;
 
-      // Check properties of the session names
-      const isDigitA = startsWithDigit(nameA);
-      const isDigitB = startsWithDigit(nameB);
-      const includesOverA = includesOver(nameA);
-      const includesOverB = includesOver(nameB);
-      const containsFirstA = containsFirst(nameA);
-      const containsFirstB = containsFirst(nameB);
+      const newData = [];
+      const newExpandedKeys = [];
+      sortedSessions?.forEach((ele, i) => {
+        if (ele.com_perm === "YES") {
+          const record = {
+            key: i,
+            session_name: ele.session_name,
+            oddsYes: ele.oddsYes,
+            oddsNo: ele.oddsNo,
+            runsNo: ele.runsNo,
+            runsYes: ele.runsYes,
+            running_status: ele.running_status,
+            session_id: ele.session_id,
+            max: ele.max,
+            selectionId: ele.Selection_id,
+            remark: ele.remark ? ele.remark : null,
+          };
+          newData.push(record);
+          if (record.remark) {
+            newExpandedKeys.push(record.session_id);
+          }
+        }
+      });
+      setData2(newData);
+      setExpandedRowKeys(newExpandedKeys);
+    }
+  }, [matchScoreDetails]);
 
-      // Handle cases where either session contains "1ST" or "FIRST"
-      if (containsFirstA && !containsFirstB) return 1; // "1ST"/"FIRST" comes last
-      if (!containsFirstA && containsFirstB) return -1; // "1ST"/"FIRST" comes last
 
-      // First priority: Digits with "OVER" come before digits without "OVER"
-      if (isDigitA && isDigitB) {
-        if (includesOverA && !includesOverB) return -1; // "OVER" comes before non-"OVER"
-        if (!includesOverA && includesOverB) return 1; // "OVER" comes after non-"OVER"
-
-        // If both have or don't have "OVER", sort numerically
-        const numA = getNumericPart(nameA);
-        const numB = getNumericPart(nameB);
-        return numA - numB;
-      }
-
-      // Second priority: Digits come before letters
-      if (isDigitA && !isDigitB) return -1; // Digits come before letters
-      if (!isDigitA && isDigitB) return 1; // Letters come after digits
-
-      // Third priority: Sort alphabetically for letters
-      return nameA.localeCompare(nameB);
-    });
-
-    // const sortedSessions = matchScoreDetails.session.sort((a, b) => {
-    //   return parseInt(a.priority, 10) - parseInt(b.priority, 10);
-    // });
-    sortedSessions?.forEach((ele, i) => {
-      if (ele.com_perm === "YES") {
-        data2.push({
-          key: i,
-          session_name: ele.session_name,
-          oddsYes: ele.oddsYes,
-          oddsNo: ele.oddsNo,
-          runsNo: ele.runsNo,
-          runsYes: ele.runsYes,
-          running_status: ele.running_status,
-          session_id: ele.session_id,
-          max: ele.max,
-          selectionId: ele.Selection_id,
-          remark: ele.remark ? ele.remark : null,
-        });
-      }
-    });
-  }
   const fancyColumns = [
     {
       title: (
@@ -1444,16 +1465,12 @@ const MatchDetails = () => {
           <div className=" gx-my-0 gx-text-black gx-bg-flex gx-flex-column">
             <div className="">
               <div className="gx-font-weight-semi-bold">{text}</div>
-              <div className="gx-font-weight-semi-bold gx-fs-sm">
+              <div className="gx-font-weight-normal gx-fs-11">
                 session Limit : {record.max}
               </div>
             </div>
 
-            {record?.remark && (
-              <marquee className=" gx-font-weight-semi-bold gx-text-red ">
-                {record?.remark}
-              </marquee>
-            )}
+
           </div>
         );
       },
@@ -1463,6 +1480,7 @@ const MatchDetails = () => {
       dataIndex: "oddsNo",
       key: "oddsNo",
       width: "20%",
+
       onCell: (record, rowIndex) => ({
         className:
           record.running_status === "SUSPENDED"
@@ -1570,109 +1588,135 @@ const MatchDetails = () => {
     },
   ];
 
+  const expandedRowRender = (record) => {
+    return record.remark ? (
+      <div className="gx-font-weight-semi-bold gx-text-red">
+        <span>{record.remark}</span>
+      </div>
+    ) : null;
+  };
+
   //........................................No Commition fancy Data......................................................//
 
-  const NoCommData = [];
-  if (matchScoreDetails) {
-    // const sortedSessions = matchScoreDetails.session?.sort((a, b) => a.session_name - b.session_name);
+  const [NoCommFancyData, setNoCommFancyData] = useState([]);
+  const [expandedRowKeysNoComm, setExpandedRowKeysNoComm] = useState([]);
+  useEffect(() => {
+    if (matchScoreDetails) {
+      // const sortedSessions = matchScoreDetails.session.sort((a, b) => {
+      //   // Helper functions
+      //   const getInitialChar = (str) => str.trim().charAt(0);
+      //   const startsWithDigit = (str) => /^\d/.test(str);
+      //   const includesOver = (str) => /OVER/.test(str);
+      //   const getNumericPart = (str) =>
+      //     parseInt(str.match(/^\d+/)?.[0] || "0", 10);
+      //   const containsFirst = (str) =>
+      //     /\b1ST\b|\bFIRST\b/.test(str.toUpperCase());
 
-    // const sortedSessions = matchScoreDetails.session.sort((a, b) => {
-    //   const getInitialChar = (str) => str.trim().charAt(0);
+      //   // Extract session names
+      //   const nameA = a.session_name;
+      //   const nameB = b.session_name;
 
-    //   // Extract starting characters
-    //   const charA = getInitialChar(a.session_name);
-    //   const charB = getInitialChar(b.session_name);
+      //   // Check properties of the session names
+      //   const isDigitA = startsWithDigit(nameA);
+      //   const isDigitB = startsWithDigit(nameB);
+      //   const includesOverA = includesOver(nameA);
+      //   const includesOverB = includesOver(nameB);
+      //   const containsFirstA = containsFirst(nameA);
+      //   const containsFirstB = containsFirst(nameB);
 
-    //   // Check if characters are digits
-    //   const isDigitA = /^\d/.test(charA);
-    //   const isDigitB = /^\d/.test(charB);
+      //   // Handle cases where either session contains "1ST" or "FIRST"
+      //   if (containsFirstA && !containsFirstB) return 1; // "1ST"/"FIRST" comes last
+      //   if (!containsFirstA && containsFirstB) return -1; // "1ST"/"FIRST" comes last
 
-    //   // If both are digits or both are letters, sort accordingly
-    //   if (isDigitA && isDigitB) {
-    //     // Extract numeric part and compare
-    //     const numA = parseInt(a.session_name.match(/^\d+/)?.[0] || '0', 10);
-    //     const numB = parseInt(b.session_name.match(/^\d+/)?.[0] || '0', 10);
-    //     return numA - numB;
-    //   }
-    //   if (isDigitA && !isDigitB) {
-    //     // Digits come before letters
-    //     return -1;
-    //   }
-    //   if (!isDigitA && isDigitB) {
-    //     // Letters come after digits
-    //     return 1;
-    //   }
+      //   // First priority: Digits with "OVER" come before digits without "OVER"
+      //   if (isDigitA && isDigitB) {
+      //     if (includesOverA && !includesOverB) return -1; // "OVER" comes before non-"OVER"
+      //     if (!includesOverA && includesOverB) return 1; // "OVER" comes after non-"OVER"
 
-    //   // If both start with letters, sort alphabetically
-    //   return a.session_name.localeCompare(b.session_name);
-    // });
+      //     // If both have or don't have "OVER", sort numerically
+      //     const numA = getNumericPart(nameA);
+      //     const numB = getNumericPart(nameB);
+      //     return numA - numB;
+      //   }
 
-    const sortedSessions = matchScoreDetails.session.sort((a, b) => {
-      // Helper functions
-      const getInitialChar = (str) => str.trim().charAt(0);
-      const startsWithDigit = (str) => /^\d/.test(str);
-      const includesOver = (str) => /OVER/.test(str);
-      const getNumericPart = (str) =>
-        parseInt(str.match(/^\d+/)?.[0] || "0", 10);
-      const containsFirst = (str) =>
-        /\b1ST\b|\bFIRST\b/.test(str.toUpperCase());
+      //   // Second priority: Digits come before letters
+      //   if (isDigitA && !isDigitB) return -1; // Digits come before letters
+      //   if (!isDigitA && isDigitB) return 1; // Letters come after digits
 
-      // Extract session names
-      const nameA = a.session_name;
-      const nameB = b.session_name;
+      //   // Third priority: Sort alphabetically for letters
+      //   return nameA.localeCompare(nameB);
+      // });
 
-      // Check properties of the session names
-      const isDigitA = startsWithDigit(nameA);
-      const isDigitB = startsWithDigit(nameB);
-      const includesOverA = includesOver(nameA);
-      const includesOverB = includesOver(nameB);
-      const containsFirstA = containsFirst(nameA);
-      const containsFirstB = containsFirst(nameB);
 
-      // Handle cases where either session contains "1ST" or "FIRST"
-      if (containsFirstA && !containsFirstB) return 1; // "1ST"/"FIRST" comes last
-      if (!containsFirstA && containsFirstB) return -1; // "1ST"/"FIRST" comes last
+      const order = {
+        "STRING": 100,
+        "ONLY": 1,
+        "OVER": 2,
+        // "FALL OF": 3,
+        "BHAV": 3,
+        "RUN": 4,
+        "PSHIP": 5,
+        "BOUNDARIES": 6,
+        "HOW": 7,
+        "BALLS": 8,
+      };
 
-      // First priority: Digits with "OVER" come before digits without "OVER"
-      if (isDigitA && isDigitB) {
-        if (includesOverA && !includesOverB) return -1; // "OVER" comes before non-"OVER"
-        if (!includesOverA && includesOverB) return 1; // "OVER" comes after non-"OVER"
+      const sortedSessions = matchScoreDetails.session.sort((a, b) => {
+        const getSessionType = (sessionName) => {
+          if (sessionName.includes("ONLY")) return "ONLY";
+          if (sessionName.includes("OVER")) return "OVER";
+          if (sessionName.includes("FALL OF")) return "FALL OF";
+          if (sessionName.includes("RUN")) return "RUN";
+          if (sessionName.includes("BOUNDARIES")) return "BOUNDARIES";
+          if (sessionName.includes("HOW")) return "HOW";
+          if (sessionName.includes("BALLS")) return "BALLS";
+          return "STRING"; // Default to STRING if none match
+        };
 
-        // If both have or don't have "OVER", sort numerically
-        const numA = getNumericPart(nameA);
-        const numB = getNumericPart(nameB);
-        return numA - numB;
-      }
+        const typeA = getSessionType(a.session_name);
+        const typeB = getSessionType(b.session_name);
 
-      // Second priority: Digits come before letters
-      if (isDigitA && !isDigitB) return -1; // Digits come before letters
-      if (!isDigitA && isDigitB) return 1; // Letters come after digits
+        // Compare based on the defined order
+        let orderComparison = order[typeA] - order[typeB];
 
-      // Third priority: Sort alphabetically for letters
-      return nameA.localeCompare(nameB);
-    });
+        // If types are the same, further logic for "OVER" cases
+        // If both are of type "OVER", sort based on the numeric value before "OVER"
+        if (typeA === "OVER" && typeB === "OVER") {
+          const numberA = parseInt(a.session_name.split(" ")[0]) || 0; // Extracting number before "OVER"
+          const numberB = parseInt(b.session_name.split(" ")[0]) || 0; // Extracting number before "OVER"
+          return numberA - numberB; // Compare based on numeric values
+        }
 
-    // const sortedSessions = matchScoreDetails.session.sort((a, b) => {
-    //   return parseInt(a.priority, 10) - parseInt(b.priority, 10);
-    // });
-    sortedSessions?.forEach((ele, i) => {
-      if (ele.com_perm === "NO") {
-        NoCommData.push({
-          key: i,
-          session_name: ele.session_name,
-          oddsYes: ele.oddsYes,
-          oddsNo: ele.oddsNo,
-          runsNo: ele.runsNo,
-          runsYes: ele.runsYes,
-          running_status: ele.running_status,
-          session_id: ele.session_id,
-          max: ele.max,
-          selectionId: ele.Selection_id,
-          remark: ele.remark ? ele.remark : null,
-        });
-      }
-    });
-  }
+        return orderComparison;
+      });
+
+      const newData = [];
+      const newExpandedKeys = [];
+      sortedSessions?.forEach((ele, i) => {
+        if (ele.com_perm === "NO") {
+          const record = {
+            key: i,
+            session_name: ele.session_name,
+            oddsYes: ele.oddsYes,
+            oddsNo: ele.oddsNo,
+            runsNo: ele.runsNo,
+            runsYes: ele.runsYes,
+            running_status: ele.running_status,
+            session_id: ele.session_id,
+            max: ele.max,
+            selectionId: ele.Selection_id,
+            remark: ele.remark ? ele.remark : null,
+          };
+          newData.push(record);
+          if (record.remark) {
+            newExpandedKeys.push(record.session_id);
+          }
+        }
+      });
+      setNoCommFancyData(newData);
+      setExpandedRowKeysNoComm(newExpandedKeys);
+    }
+  }, [matchScoreDetails]);
   const NoCommfancyColumns = [
     {
       title: (
@@ -1700,11 +1744,7 @@ const MatchDetails = () => {
               </div>
             </div>
 
-            {record?.remark && (
-              <marquee className="gx-font-weight-semi-bold gx-text-red ">
-                {record?.remark}
-              </marquee>
-            )}
+
           </div>
         );
       },
@@ -2038,7 +2078,7 @@ const MatchDetails = () => {
       dataIndex: "pos",
       key: "pos",
       render: (value) => (
-        <span className={`${value > 0 ? "gx-text-green-0" : value < 0 ? "gx-text-red" : "gx-text-black"}`}>
+        <span className={`${value > 0 ? "gx-text-primary" : value < 0 ? "gx-text-red" : "gx-text-black"}`}>
           {value}
         </span>
       ),
@@ -2189,26 +2229,26 @@ const MatchDetails = () => {
 
       <Row className="gx-bg-flex gx-align-items-center gx-justify-content-between gx-bg-grey">
         <div>
-        <span
-          onClick={() => setActiveTabTv((tv) => !tv)}
-          className="gx-bg-primary gx-px-3 gx-py-1 gx-font-weight-semi-bold gx-text-white"
-        >
-          TV
-        </span>
-        <span className="gx-px-2 ">
-        <Link to='/main/edit-stakes'>
-                <span  className=" gx-px-1 gx-py-1 gx-font-weight-semi-bold gx-text-uppercase gx-text-white">
-                <SettingFilled style={{ fontSize: '18px' }}/>
-                </span>
-               </Link>
-         
+          <span
+            onClick={() => setActiveTabTv((tv) => !tv)}
+            className="gx-bg-primary gx-px-3 gx-py-1 gx-font-weight-semi-bold gx-text-white"
+          >
+            TV
+          </span>
+          <span className="gx-px-2 ">
+            <Link to='/main/edit-stakes'>
+              <span className=" gx-px-1 gx-py-1 gx-font-weight-semi-bold gx-text-uppercase gx-text-white">
+                <SettingFilled style={{ fontSize: '18px' }} />
+              </span>
+            </Link>
+
           </span>
         </div>
-        
-        <div className="gx-py-1">
-         <span className="">
 
-         <Switch
+        <div className="gx-py-1">
+          <span className="">
+
+            <Switch
               onChange={handleBetModalToggle}
               checked={matchBetChipPlaceModal}
               checkedChildren="ON"
@@ -2218,20 +2258,27 @@ const MatchDetails = () => {
               style={{
                 backgroundColor: matchBetChipPlaceModal ? "green" : "red",
                 transform: "scale(1.3)",
-               
+
               }}
             />
-         </span>
-        <span
-          onClick={() => {
-            setActiveTabFame((frame) => !frame);
-          }}
-          className="gx-bg-primary gx-px-3 gx-py-1 gx-font-weight-semi-bold gx-text-white"
-        >
-          FS
-        </span>
+          </span>
+          <span
+            onClick={() => {
+              setActiveTabFame((frame) => !frame);
+            }}
+            className="gx-bg-primary gx-px-3 gx-py-1 gx-font-weight-semi-bold gx-text-white"
+          >
+            FS
+          </span>
         </div>
-      
+
+      </Row>
+      <Row>
+        {matchDetailsResponse?.notification && (
+          <Col className=" gx-text-white gx-fs-md gx-font-weight-semi-bold gx-py-1  gx-text-uppercase" xs={24} style={{ backgroundColor: "#73766F", borderTop: '2px solid white' }}>
+            <marquee>{matchDetailsResponse.notification ? matchDetailsResponse.notification : null}</marquee>
+          </Col>
+        )}
       </Row>
       <Row
         justify={"center"}
@@ -2254,13 +2301,13 @@ const MatchDetails = () => {
         )}
       </Row>
       <Row justify={"center"}>
-    
+
         <Col xs={24} sm={24} className="gx-col-full">
-        
-        {/* matchDetailsResponse?.scoreIframe  */}
-          {matchDetailsResponse?.scoreIframe || matchIframeUrl  ? (
+
+          {/* matchDetailsResponse?.scoreIframe  */}
+          {matchDetailsResponse?.scoreIframe || matchIframeUrl ? (
             <Row
-              style={{ height: `${activeTabFrame ? "220px" : "110px"}` }}
+              style={{ height: `${activeTabFrame ? "285px" : "110px"}` }}
               className=""
             >
               <iframe
@@ -2272,24 +2319,26 @@ const MatchDetails = () => {
             </Row>
           ) : null}
         </Col>
+        {settings?.matchOddsFlag &&
+          <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
+            {matchDetailsResponse?.isMatchOdds &&
+              socketDetails?.find((el) => el.marketType === "Match Odds") && (
+                <Table
+                  className="gx-w-100 custom-ant-table gx-mx-0 gx-my-0"
+                  size="small"
+                  title=""
+                  dataSource={oddsData}
+                  columns={oddsColumn}
+                  pagination={false}
+                  bordered
+                  scroll={{ x: true }}
+                  rowClassName="no-hover"
+                  style={{ marginTop: "16px" }}
+                />
+              )}
+          </Col>
+        }
 
-        <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
-          {matchDetailsResponse?.isMatchOdds &&
-            socketDetails?.find((el) => el.marketType === "Match Odds") && (
-              <Table
-                className="gx-w-100 custom-ant-table gx-mx-0 gx-my-0"
-                size="small"
-                title=""
-                dataSource={oddsData}
-                columns={oddsColumn}
-                pagination={false}
-                bordered
-                scroll={{ x: true }}
-                rowClassName="no-hover"
-                style={{ marginTop: "16px" }}
-              />
-            )}
-        </Col>
         <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
           {data && data.length > 0 ? (
             <Table
@@ -2306,23 +2355,25 @@ const MatchDetails = () => {
             />
           ) : null}
         </Col>
-        <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
-          {matchDetailsResponse?.isTieOdds &&
-            matchScoreDetails?.team_data?.length <= 2 &&
-            socketDetails?.find((el) => el.marketType == "Tied Match") && (
-              <Table
-                className="gx-w-100 gx-mx-0 gx-my-0"
-                size="small"
-                rowHoverable={false}
-                title=""
-                dataSource={tiedData}
-                columns={tiedColumn}
-                pagination={false}
-                bordered
-                style={{ marginTop: "16px" }}
-              />
-            )}
-        </Col>
+        {settings?.TiedOddsFlag &&
+          <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
+            {matchDetailsResponse?.isTieOdds &&
+              matchScoreDetails?.team_data?.length <= 2 &&
+              socketDetails?.find((el) => el.marketType == "Tied Match") && (
+                <Table
+                  className="gx-w-100 gx-mx-0 gx-my-0"
+                  size="small"
+                  rowHoverable={false}
+                  title=""
+                  dataSource={tiedData}
+                  columns={tiedColumn}
+                  pagination={false}
+                  bordered
+                  style={{ marginTop: "16px" }}
+                />
+              )}
+          </Col>
+        }
         <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
           {matchDetailsResponse?.isToss && tossData && tossData.length > 0 ? (
             <Table
@@ -2341,34 +2392,62 @@ const MatchDetails = () => {
         <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
           {data2 && data2.length > 0 ? (
             <Table
-              className="gx-w-100 gx-mx-0 gx-my-0"
+              className="gx-w-100 gx-mx-0 gx-my-0 gx-table-responsive"
               size="small"
-              title=""
               dataSource={data2}
               columns={fancyColumns}
-              cellPaddingBlockSM
               pagination={false}
+              rowKey="session_id"
+              expandable={{
+                expandedRowRender,
+                rowExpandable: (record) => !!record.remark,
+              }}
+              expandedRowKeys={expandedRowKeys}
+              onExpand={(expanded, record) => {
+                setExpandedRowKeys((prevKeys) =>
+                  expanded
+                    ? [...prevKeys, record.session_id]
+                    : prevKeys.filter((key) => key !== record.session_id)
+                );
+              }}
               bordered
-              style={{ marginTop: "16px" }}
+            //   style={{
+            //     marginTop: "16px",
+            //     background: isHovered ? 'transparent' : 'initial',
+            // }}
+            // onMouseEnter={() => setIsHovered(true)}
+            // onMouseLeave={() => setIsHovered(false)}
+            // style={{ marginTop: "16px",  background:  'transparent' }}
             />
           ) : null}
         </Col>
 
-        <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
-          {NoCommData && NoCommData.length > 0 ? (
-            <Table
-              className="gx-w-100 gx-mx-0 gx-my-0"
-              size="small"
-              title=""
-              dataSource={NoCommData}
-              columns={NoCommfancyColumns}
-              cellPaddingBlockSM
-              pagination={false}
-              bordered
-              style={{ marginTop: "16px" }}
-            />
-          ) : null}
-        </Col>
+      {settings?.noFancyMatchDetails && <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
+        {NoCommFancyData && NoCommFancyData.length > 0 ? (
+          <Table
+            className="gx-w-100 gx-mx-0 gx-my-0 gx-table-responsive"
+            size="small"
+            dataSource={NoCommFancyData}
+            columns={NoCommfancyColumns}
+            pagination={false}
+            rowKey="session_id"
+            expandable={{
+              expandedRowRender,
+              rowExpandable: (record) => !!record.remark,
+            }}
+            expandedRowKeys={expandedRowKeysNoComm}
+            onExpand={(expanded, record) => {
+              setExpandedRowKeysNoComm((prevKeys) =>
+                expanded
+                  ? [...prevKeys, record.session_id]
+                  : prevKeys.filter((key) => key !== record.session_id)
+              );
+            }}
+            bordered
+            style={{ marginTop: "16px" }}
+          />
+        ) : null}
+      </Col>}
       </Row>
       {!matchBetPlaceModal && <Row id="betPLaceModal" justify={"center"}>
         {timeLeft > 0 && (
@@ -2524,7 +2603,7 @@ const MatchDetails = () => {
             >
               {betModalData?.printData}{" "}
             </span>
-           
+
             <span>{betModalData?.runs ? betModalData?.runs : "0"} [{betModalData?.odds ? betModalData?.odds : 0}] </span>  <br />
             {betModalData?.oddsType} : {betModalData?.sessionName}{" "}
           </div>
@@ -2583,6 +2662,7 @@ const MatchDetails = () => {
 
       <div ref={scrollToRef} className="gx-mb-2"></div>
 
+
       <Row justify={"center"} className="">
         {mybetsData && mybetsData?.length > 0 && (
           <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
@@ -2604,13 +2684,13 @@ const MatchDetails = () => {
             />
           </Col>
         )}
-        {IncompleteddataList && IncompleteddataList?.length > 0 && (
-          <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
-            <div className="gx-bg-flex gx-justify-content-center gx-bg-grey gx-fs-lg gx-font-weight-semi-bold gx-text-white gx-py-1">
-              FANCY BETS
-            </div>
+        <Col className="gx-px-0 gx-py-0 gx-mx-0 gx-my-0" xs={24} sm={24}>
+          <div className="gx-bg-flex gx-justify-content-center gx-bg-grey gx-fs-lg gx-font-weight-semi-bold gx-text-white gx-py-1">
+            FANCY BETS
+          </div>
+          {IncompleteddataList && IncompleteddataList?.length > 0 ? (
             <Table
-              className="gx-w-100 gx-mx-0 gx-my-0"
+              className="gx-w-100 gx-mx-0 gx-my-0 "
               size="small"
               rowHoverable={false}
               title=""
@@ -2621,8 +2701,8 @@ const MatchDetails = () => {
               bordered
               rowClassName={(row, index) => row.Type === 'NO' ? 'matchdtailsNoBackground' : row.Type === 'YES' ? 'matchdtailsYesBackground' : "gx-bg-light-grey"}
             />
-          </Col>
-        )}
+          ) : <div className="gx-w-100 gx-bg-flex gx-justify-content-center">N0 Data Found</div>}
+        </Col>
 
         {/* {completeddataList && completeddataList?.length > 0 && ( */}
         {/* // <Row className="" justify={"center"}> */}
@@ -2676,7 +2756,7 @@ const MatchDetails = () => {
     </Auxiliary>
   );
 };
-export default MatchDetails;
+export default MatchDetailsOther;
 
 
 
