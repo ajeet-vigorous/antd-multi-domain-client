@@ -1331,31 +1331,31 @@ const MatchDetailsBalaji = () => {
 
     const order = {
       STRING: 100,
-      ONLY: 1,
-      OVER: 2,
-      "FALL OF": 3,
-      RUN: 4,
-      PSHIP: 5,
-      BOUNDARIES: 6,
-      HOW: 7,
-      BALLS: 8,
+      "OVER": 1,
+      "ONLY": 2,
+      "RUN": 3,
+      "BOUNDARIES": 4,
+      "WKT": 5,
+      "BALLS": 6,
+      "FALL OF": 7,
+      "PSHIP": 8,
+      "HOW": 9,
     };
-
     const getSessionType = (name = "") => {
       if (name.includes("ONLY")) return "ONLY";
       if (name.includes("OVER")) return "OVER";
       if (name.includes("FALL OF")) return "FALL OF";
+      if (name.includes("WKT")) return "WKT";
       if (name.includes("RUN")) return "RUN";
-      if (name.includes("BOUNDARIES")) return "BOUNDARIES";
       if (name.includes("HOW")) return "HOW";
       if (name.includes("BALLS")) return "BALLS";
+      if (name.includes("BOUNDARIES")) return "BOUNDARIES";
       return "STRING";
     };
 
     const sorted = [...matchScoreDetails.session].sort((a, b) => {
       const typeA = getSessionType(a.session_name);
       const typeB = getSessionType(b.session_name);
-
       if (typeA === "OVER" && typeB === "OVER") {
         const numberA = parseInt(a.session_name) || 0;
         const numberB = parseInt(b.session_name) || 0;
