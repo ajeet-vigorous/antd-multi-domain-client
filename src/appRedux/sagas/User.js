@@ -489,7 +489,13 @@ function* casinoLoginUrlSaga({ payload }) {
       yield put(casinoLoginUrlFailure(response.data.message));
     }
   } catch (error) {
-    yield put(casinoLoginUrlFailure(error.message));
+     NotificationManager.error(error?.data?.message, 'Error', 1000, () => {
+      alert('callback');
+    });
+    yield put(casinoLoginUrlFailure(error.data.message));
+    setTimeout(() => {
+window.location.href = '/main/dashboard'
+  },1000)
   }
 }
 

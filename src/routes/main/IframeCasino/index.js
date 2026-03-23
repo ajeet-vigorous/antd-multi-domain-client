@@ -22,7 +22,6 @@ const IframeCasino = () => {
         let reqData = {
             "gameId": gameId + "",
             "platformId": "mobile",
-           
             "redirectUrl": `${domain}/main/dashboard`,
             "providerName": gameId === "3031" ? "diamond" : "",
 

@@ -223,7 +223,7 @@ const domainSettings = {
     socketDomain: "balaji12.com",
     "--nav-dark-bg": "#374F68",
     "--nav-dark-bg-revers": "#001F3F",
-    noFancyMatchDetails: false,
+    noFancyMatchDetails: true,
     internationalCasino: false,
     virtuleGame: false,
     aviatorFlag: true,
@@ -267,6 +267,36 @@ const domainSettings = {
       host: window.location.host,
     }
   },
+"allbets24.com": {
+    title: "ALLBETS24",
+    favicon: "/favicon.ico",
+    logo: "/assets/images/Allbets.png",
+    SOCKET_URL: "https://api.allbets24.com/",
+    apiurl: "https://api.allbets24.com/v1/",
+    domainName: "Allbets24",
+    sportFlag: false,
+    footerFlag: false,
+    websiteName: "ALLBETS24.COM",
+    websiteName2: "",
+    socketDomain: "allbets24.com",
+     "--nav-dark-bg": "linear-gradient(#21a027 0%, #000 100%)",
+    "--nav-dark-bg-revers": "linear-gradient(#000 0%, #21a027 100%)",
+    noFancyMatchDetails: false,
+    internationalCasino: false,
+    virtuleGame: false,
+    aviatorFlag: true,
+    matchOddsFlag: false,
+    TiedOddsFlag: false,
+    matkaVisible: true,
+    demoCredentials: {
+      username: "Demo2",
+      password: "1122",
+      isClient: true,
+      host: window.location.host,
+    }
+  },
+
+  
 
   "defult": {
     title: "STAR99",
@@ -302,7 +332,7 @@ const domainSettings = {
 
 
 const domain = window.location.host;
-const settings = domainSettings[domain] || domainSettings["defult"];
+const settings = domainSettings[domain] || domainSettings["allbets24.com"];
 
 Object.entries(settings).forEach(([key, value]) => {
   document.documentElement.style.setProperty(key, value);
@@ -338,6 +368,9 @@ else if (settings?.domainName === 'LION99') {
 }
 
 else if (settings?.domainName === 'BALAJI12') {
+  document.title = settings?.title
+}
+else if (settings?.domainName === 'Allbets24') {
   document.title = settings?.title
 }
 

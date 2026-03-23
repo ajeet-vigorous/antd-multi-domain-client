@@ -21,7 +21,7 @@ const Settings = () => {
                 <PLX99Settings />
             ) : settings.domainName === "PLXWIN" ? (
                 <PLXWINSettings />
-            ) : (settings.domainName === "DRX100" || settings.domainName === "JEM29" || settings.domainName === "RACEX9" || settings.domainName === "LION99" || settings.domainName === "BALAJI12" || settings.domainName === "STAR99") ? (
+            ) : (settings.domainName === "DRX100" || settings.domainName === "JEM29" || settings.domainName === "RACEX9" || settings.domainName === "LION99" || settings.domainName === "BALAJI12" || settings.domainName === "STAR99" || settings.domainName === "Allbets24") ? (
                 <DRX100Settings />
             ) : settings.domainName === "PLR11" ? (
                 <PLR11Settings />

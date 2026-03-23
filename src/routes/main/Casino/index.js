@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Typography } from 'antd';
 import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 import { liveCasinoList, virtualCasinoList } from './casinoJson'
+import settings from '../../../domainConfig';
 // import CommingSoon from '../../components/CommingSoon/CommingSoon';
 
 const { Meta } = Card;
@@ -67,6 +68,43 @@ const Casino = ({ history }) => {
         Live Casino
       </Typography>
       <Row justify="center" className=' gx-bg-flax gx-block gx-justify-center gx-items-center gx-lg:space-x-3 lg:space-y-0 gx-space-x-0 space-y-3 gx-md:px-10' style={{ gap: '10px' }}>
+       {settings.domainName === 'Allbets24' && <> <Col  className='gx-px-0 gx-mb-0' span={10} md={6} lg={3}>
+            <Link to={`/main/matka`}>
+              <Card
+                className='gx-position-relative'
+                hoverable
+                cover={
+                  <img
+                    alt="matka"
+                    src="/assets/Dashboard/matka_new.webp"
+                    className='gx-rounded-base gx-pointer gx-object-contain'
+                    style={{ height: '11rem' }}
+                  />
+                }
+              >
+              </Card>
+            </Link>
+          </Col>
+
+         <Col  className='gx-px-0 gx-mb-0' span={10} md={6} lg={3}>
+            <Link to={`/main/iframe-casino/600096`}>
+              <Card
+                className='gx-position-relative'
+                hoverable
+                cover={
+                  <img
+                    alt="color"
+                    src="/assets/Dashboard/colorgame.webp"
+                    className='gx-rounded-base gx-pointer gx-object-contain'
+                    style={{ height: '11rem' }}
+                  />
+                }
+              >
+              </Card>
+            </Link>
+          </Col></>}
+
+
         {sortedLiveCasinoList?.map((casino) => (
           <Col key={casino.eventId} className='gx-px-0 gx-mb-0' span={10} md={6} lg={3}>
             <Link to={`/main/${casino.shortName}/${casino.eventId}`}>

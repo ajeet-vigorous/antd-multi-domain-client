@@ -3,6 +3,7 @@ import React from "react";
 import { Col, Row } from "antd";
 import Auxiliary from "util/Auxiliary";
 import { Link } from "react-router-dom";
+import settings from "../../../../domainConfig";
 
 
 
@@ -34,7 +35,7 @@ const Drx100Dashboard = ({ handleCasinoOpen }) => {
 
 
 
-                <Row className="gx-flex-gap-150 gx-bg-flex gx-mb-1 ant-row-no-wrap gx-justify-content-center" gutter={[20, 20]}>
+               {settings.domainName ===  'Allbets24' ? null  : <Row className="gx-flex-gap-150 gx-bg-flex gx-mb-1 ant-row-no-wrap gx-justify-content-center" gutter={[20, 20]}>
         <Col>
                         <div onClick={() => window.location.href = '/main/aviator/303031'}>
 
@@ -57,7 +58,7 @@ const Drx100Dashboard = ({ handleCasinoOpen }) => {
 
 
 
-                </Row>
+                </Row>}
 
 
 

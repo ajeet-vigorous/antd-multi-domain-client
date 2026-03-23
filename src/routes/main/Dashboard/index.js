@@ -36,7 +36,7 @@ const Dashboard = () => {
       <Plx99Dashboard handleCasinoOpen={handleCasinoOpen} />
     ) : settings.domainName === "PLXWIN" ? (
       <PlxwinDashboard handleCasinoOpen={handleCasinoOpen} />
-    ) : (settings.domainName === "DRX100" || settings.domainName === "JEM29" || settings.domainName === "RACEX9" || settings.domainName === "LION99" || settings.domainName === "BALAJI12" || settings.domainName === "STAR99") ? (
+    ) : (settings.domainName === "DRX100" || settings.domainName === "JEM29" || settings.domainName === "RACEX9" || settings.domainName === "LION99" || settings.domainName === "BALAJI12" || settings.domainName === "STAR99" || settings.domainName === "Allbets24") ? (
       <Drx100Dashboard handleCasinoOpen={handleCasinoOpen} />
     ): settings.domainName === "PLR11" ? (
       <PLR11Dashboard handleCasinoOpen={handleCasinoOpen} />
