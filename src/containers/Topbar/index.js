@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Popover } from "antd";
 import { Link } from "react-router-dom";
-
+import { useHistory } from "react-router-dom";
 import { toggleCollapsedSideNav } from "../../appRedux/actions";
 import UserInfo from "../../components/UserInfo";
 import Auxiliary from "util/Auxiliary";
@@ -36,6 +36,7 @@ const Topbar = () => {
 
   const dispatch = useDispatch();
   const location = useLocation();
+  const history = useHistory();
   // let notification = localStorage.getItem("notification");
   const { doaminsettingData } = useSelector(state => state.UserReducer)
   const [showNotification, setNotification] = useState();
@@ -62,7 +63,7 @@ const Topbar = () => {
       clearInterval(interval);
     };
   }, [dispatch]);
-  
+
   useEffect(() => {
     const initData = localStorage.getItem("matchList");
 
@@ -140,6 +141,16 @@ const Topbar = () => {
   // const modalOpen = localStorage.getItem("modalopen")
 
   let userID = JSON.parse(localStorage.getItem("user_id_tvs99"));
+
+  useEffect(() => {
+    if (!userID?.data?.isPasswordChanged) {
+      if (location.pathname !== "/main/changepassword") {
+        history.push("/main/changepassword");
+      }
+    }
+  }, [location, userID, history]);
+
+
   let exposureLocal = JSON.parse(localStorage.getItem("client-wallet-exposure"));
   let balanceLocal = JSON.parse(localStorage.getItem("client-wallet-balance"));
   const modalOpen = localStorage.getItem("modalopen");
@@ -162,16 +173,17 @@ const Topbar = () => {
         {modalOpen && <Rules />}
         <div>
           <Link to="/main/dashboard" className=" gx-pointer">
-            <img alt="" src={settings?.logo} width={100} height={50} /></Link>
-        </div>
-        <div className='gx-text-white'>
-          <span>{client?.username} ({client?.name})</span><br />
-          {/* <span>chips: {Number.parseFloat(Math.abs(clientBalance)).toFixed(2)}</span> */}
+            <img alt="" src={settings?.logo} width={120} height={40} /></Link>
         </div>
 
-        <div className='' >
+
+        <div className='gx-bg-flex gx-align-content-center ' >
+
           <ul className="gx-header-notifications gx-ml-auto gx-text-white" style={{ height: '53px' }}>
+            <div className='gx-text-white gx-text-uppercase'>
+              {client?.username} ({client?.name})
 
+            </div>
             {width >= TAB_SIZE ?
               <Auxiliary>
 
@@ -221,16 +233,19 @@ const Topbar = () => {
           {Notification}
         </marquee>
       )}
-      <div className="gx-py-1 gx-bg-flex gx-justify-content-center gx-bg-white gx-box-shadow">
+      <div className="gx-py-1 gx-w-100 gx-bg-flex gx-justify-content-center gx-bg-white gx-box-shadow">
         {/* <span>Chips: {Number.parseFloat(Math.abs(clientBalance)).toFixed(2)}</span>&nbsp;&nbsp; */}
         {/* <span>Chips: {Math.floor(Math.abs(clientBalance) * 100) / 100.00}</span>&nbsp;&nbsp; */}
         {/* <span>Chips: {Math.abs(clientBalance) % 1 === 0 ?
           Math.abs(clientBalance).toFixed(2) :
           Math.floor(Math.abs(clientBalance) * 100) / 100.00}</span>&nbsp;&nbsp; */}
-           {(Math.floor(Number(clientBalance) * 100) / 100).toFixed(2)}
-        <Link to='/main/pending-bets'>
-          | Exp: <span className={`${clientExposure > 0 ? 'gx-text-green-0' : 'gx-text-red'}`}>{Number.parseFloat(Math.abs(clientExposure)).toFixed(2)}</span>
-        </Link>
+        <div className="gx-w-50"></div>
+        <div className="gx-fs-md gx-text-weight-bold gx-text-green-0">
+          {(Math.floor(Number(clientBalance) * 100) / 100).toFixed(2)}
+          <Link to='/main/pending-bets'>
+            | Exp: <span className={`${clientExposure > 0 ? 'gx-text-green-0' : 'gx-text-red'}`}>{Number.parseFloat(Math.abs(clientExposure)).toFixed(2)}</span>
+          </Link>
+        </div>
       </div>
     </>
   );

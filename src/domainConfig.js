@@ -251,7 +251,7 @@ const domainSettings = {
     websiteName: "STAR99.PRO",
     websiteName2: "",
     socketDomain: "star99.pro",
-     "--nav-dark-bg": "linear-gradient(#a03421 0%, #000 100%)",
+    "--nav-dark-bg": "linear-gradient(#a03421 0%, #000 100%)",
     "--nav-dark-bg-revers": "linear-gradient(#000 0%, #a03421 100%)",
     noFancyMatchDetails: false,
     internationalCasino: false,
@@ -267,7 +267,38 @@ const domainSettings = {
       host: window.location.host,
     }
   },
-"allbets24.com": {
+
+  "2xbat.co": {
+    title: "2xbat",
+    favicon: "/favicon.ico",
+    logo: "/assets/images/2xbat.png",
+    SOCKET_URL: "https://api.7wickets.pro/",
+    apiurl: "https://api.7wickets.pro/v1/",
+    domainName: "2xbat",
+    sportFlag: false,
+    footerFlag: false,
+    websiteName: "2xbat.co",
+    websiteName2: "",
+    socketDomain: "2xbat.co",
+    "--nav-dark-bg": "linear-gradient(#000428 0%, #004e92 100%)",
+    "--nav-dark-bg-revers": "linear-gradient(#004e92 0%, #000428 100%)",
+    noFancyMatchDetails: false,
+    internationalCasino: false,
+    virtuleGame: false,
+    aviatorFlag: true,
+    matchOddsFlag: false,
+    TiedOddsFlag: false,
+    matkaVisible: true,
+    demoCredentials: {
+      username: "Demo2",
+      password: "1122",
+      isClient: true,
+      host: window.location.host,
+    }
+  },
+
+
+  "allbets24.com": {
     title: "ALLBETS24",
     favicon: "/favicon.ico",
     logo: "/assets/images/Allbets.png",
@@ -279,12 +310,12 @@ const domainSettings = {
     websiteName: "ALLBETS24.COM",
     websiteName2: "",
     socketDomain: "allbets24.com",
-     "--nav-dark-bg": "linear-gradient(#21a027 0%, #000 100%)",
-    "--nav-dark-bg-revers": "linear-gradient(#000 0%, #21a027 100%)",
+    "--nav-dark-bg": "linear-gradient(#47b8af 0%, #000 100%)",
+    "--nav-dark-bg-revers": "linear-gradient(#000 0%, #47b8af 100%)",
     noFancyMatchDetails: false,
     internationalCasino: false,
     virtuleGame: false,
-    aviatorFlag: true,
+    aviatorFlag: false,
     matchOddsFlag: false,
     TiedOddsFlag: false,
     matkaVisible: true,
@@ -296,22 +327,22 @@ const domainSettings = {
     }
   },
 
-  
+
 
   "defult": {
-    title: "STAR99",
+    title: "2xbet",
     favicon: "/favicon.ico",
-    logo: "/assets/images/star99.png",
-    SOCKET_URL: "https://api.zee99.pro/",
-    apiurl: "https://api.zee99.pro/v1/",
-    domainName: "STAR99",
+    logo: "/assets/images/2xbat.png",
+    SOCKET_URL: "https://api.7wickets.pro/",
+    apiurl: "https://api.7wickets.pro/v1/",
+    domainName: "2xbet",
     sportFlag: false,
     footerFlag: false,
-    websiteName: "STAR99.PRO",
+    websiteName: "2xbet.co",
     websiteName2: "",
-    socketDomain: "star99.pro",
-    "--nav-dark-bg": "linear-gradient(#a03421 0%, #000 100%)",
-    "--nav-dark-bg-revers": "linear-gradient(#000 0%, #a03421 100%)",
+    socketDomain: "2xbet.co",
+    "--nav-dark-bg": "linear-gradient(#000428 0%, #004e92 100%)",
+    "--nav-dark-bg-revers": "linear-gradient(#004e92 0%, #000428 100%)",
     noFancyMatchDetails: false,
     internationalCasino: false,
     virtuleGame: false,

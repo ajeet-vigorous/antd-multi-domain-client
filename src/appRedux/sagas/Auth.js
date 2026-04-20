@@ -40,7 +40,7 @@ function* signInUserWithEmailPassword({ payload }) {
       message.error('You Are Not Authorised');
       setTimeout(() => {
         window.location.href = '/signin';
-      }, 1000); 
+      }, 1000);
       return;
     }
     if (signInUser.message) {
@@ -88,6 +88,11 @@ function* changePasswordSaga({ payload }) {
       NotificationManager.success(response?.data?.message, "Success", 1000, () => {
         alert('callback');
       });
+      setTimeout(() => {
+        localStorage.clear();
+        window.location.href = '/signin';
+      }, 1000)
+
       // yield put(userSignOut())
     } else {
       yield put(changePasswordFailure(response.data.message));

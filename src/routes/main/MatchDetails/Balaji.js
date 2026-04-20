@@ -236,8 +236,34 @@ const MatchDetailsBalaji = () => {
       callCache(matchDetailsResponse.cacheUrl);
     }
 
+    // Reconnect socket on tab focus and online events
+    const handleFocus = () => {
+      if (matchDetailsResponse.socketPerm) {
+        if (socketRef.current) {
+          socketRef.current.close();
+          socketRef.current = null;
+        }
+        connectSocket(matchDetailsResponse.socketUrl);
+      }
+    };
+
+    const handleOnline = () => {
+      if (matchDetailsResponse.socketPerm) {
+        if (socketRef.current) {
+          socketRef.current.close();
+          socketRef.current = null;
+        }
+        connectSocket(matchDetailsResponse.socketUrl);
+      }
+    };
+
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("online", handleOnline);
+
     // Clean up on unmount
     return () => {
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("online", handleOnline);
       if (intervalIdRef.current) {
         clearInterval(intervalIdRef.current);
       }

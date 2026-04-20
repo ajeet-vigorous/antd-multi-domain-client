@@ -258,7 +258,7 @@ const ChangePassword = () => {
 
   return (
     <Row justify="center">
-      <Col xxl={5} xl={5} lg={7} md={11} sm={14} xs={20}>
+      <Col lg={7} md={11} sm={14} xs={20}>
         <div className='gx-rounded-sm' style={{ backgroundColor: '#1B2456' }} >
           <div className='gx-bg-grey-revers gx-py-3 gx-rounded-lg gx-bg-flex gx-justify-content-center gx-align-content-center gx-text-white' style={{ height: '70px' }}>
             <div className='gx-h-100 gx-bg-flex gx-justify-content-center gx-align-content-center gx-fs-xl gx-pt-2'>Change Password</div>

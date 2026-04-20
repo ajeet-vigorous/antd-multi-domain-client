@@ -217,7 +217,7 @@ useEffect(() => {
   useEffect(() => {
     if (!matchDetailsResponse) return;
 
-   
+
     // Set the socket URL
     // setSocketUrl(matchDetailsResponse.socketUrl);
     clearInterval(intervalIdRef.current);
@@ -234,8 +234,34 @@ useEffect(() => {
       callCache(matchDetailsResponse.cacheUrl);
     }
 
+    // Reconnect socket on tab focus and online events
+    const handleFocus = () => {
+      if (matchDetailsResponse.socketPerm) {
+        if (socketRef.current) {
+          socketRef.current.close();
+          socketRef.current = null;
+        }
+        connectSocket(matchDetailsResponse.socketUrl);
+      }
+    };
+
+    const handleOnline = () => {
+      if (matchDetailsResponse.socketPerm) {
+        if (socketRef.current) {
+          socketRef.current.close();
+          socketRef.current = null;
+        }
+        connectSocket(matchDetailsResponse.socketUrl);
+      }
+    };
+
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("online", handleOnline);
+
     // Clean up on unmount
     return () => {
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("online", handleOnline);
       if (intervalIdRef.current) {
         clearInterval(intervalIdRef.current);
       }
@@ -773,7 +799,7 @@ useEffect(() => {
             matchBetPlaceModal && setShowBetPlaceModal(true)
             !matchBetPlaceModal && scrollToElement();
           }}
-          className="gx-font-weight-semi-bold gx-text-black gx-fs-lg gx-text-uppercase"
+          className="gx-font-weight-semi-bold gx-py-2 gx-text-black gx-fs-lg gx-text-uppercase"
         >
           {(Number(text) * 100).toFixed(0)}
         </div>
@@ -2302,7 +2328,7 @@ useEffect(() => {
       </Row>
       <Row justify={"center"}>
 
-        <Col xs={24} sm={24} className="gx-col-full">
+        <Col xs={24} sm={22} className="">
 
           {/* matchDetailsResponse?.scoreIframe  */}
           {matchDetailsResponse?.scoreIframe || matchIframeUrl ? (

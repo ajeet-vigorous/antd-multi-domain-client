@@ -343,8 +343,8 @@ const Matches = () => {
                         const inputMoment = moment(element.matchDate, "DD-MM-YYYY HH:mm:ss A");
                         const currentMoment = moment().add(30, "minutes");
                         return currentMoment.isSameOrAfter(inputMoment) ?
-                          <div className="newBlinking gx-mx-1 "></div>
-                          : '';
+                          <div className="gx-bg-green-0 gx-text-white gx-px-2 ">Inplay</div>
+                          : <div className="gx-bg-gray gx-text-black gx-px-2 ">upcoming</div>;
                       })()
                     }
 
@@ -358,7 +358,7 @@ const Matches = () => {
                       F
                     </span>
                   </Col>
-                  <Col className="gx-bg-flex gx-my-1" lg={12}>
+                  {/* <Col className="gx-bg-flex gx-my-1" lg={12}>
                     <div
                       style={{ width: "9rem", gap: "3px" }}
                       className="inplayElement matchdtailsYesBackground"
@@ -395,7 +395,7 @@ const Matches = () => {
                     >
                       {Math.random().toFixed(2)}
                     </div>
-                  </Col>
+                  </Col> */}
                   <div className="gx-fs-md gx-px-2 gx-d-lg-none gx-d-block gx-font-weight-semi-bold gx-pb-1 gx-text-black">
                     {element?.seriesName}
                   </div>
@@ -446,7 +446,7 @@ const Matches = () => {
                     F
                   </span>
                 </Col>
-                <Col className="gx-bg-flex gx-my-1" lg={12}>
+                {/* <Col className="gx-bg-flex gx-my-1" lg={12}>
                   <div
                     style={{ width: "9rem", gap: "3px" }}
                     className="inplayElement matchdtailsYesBackground"
@@ -483,7 +483,7 @@ const Matches = () => {
                   >
                     {Math.random().toFixed(2)}
                   </div>
-                </Col>
+                </Col> */}
                 <div className="gx-fs-md gx-px-2 gx-d-lg-none gx-d-block gx-font-weight-semi-bold gx-pb-1">
                   {element?.seriesName}
                 </div>

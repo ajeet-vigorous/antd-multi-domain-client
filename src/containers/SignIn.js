@@ -43,7 +43,13 @@ const SignIn = () => {
         domainUrl: window.location.origin,
       };
       dispatch(domainSettingByDomain(domainSetting));
-      history.push("/main/rules");
+      let userID = JSON.parse(localStorage.getItem("user_id_tvs99"));
+      if (!userID?.data.isPasswordChanged) {
+        history.push("/main/changepassword");
+      } else {
+        history.push("/main/matches");
+      }
+
     }
   }, [authUser, dispatch, history, showMessage]);
 
@@ -87,7 +93,7 @@ const SignIn = () => {
             <div className="  gx-bg-flex gx-flex-column ">
               <div className=" gx-w-100">
                 <div className="gx-px-5 gx-py-2">
-                  <img src={settings.logo} alt="Neature" height={180} width={500}/>
+                  <img src={settings.logo} alt="Neature" height={180} width={500} />
                 </div>
               </div>
 
@@ -133,7 +139,7 @@ const SignIn = () => {
                   <Button
                     className="gx-mb-0 gx-w-100 gx-bg-primary gx-border-redius0 gx-font-weight-semi-bold gx-fs-lg gx-text-white"
                     style={{
-                     
+
                       border: "none",
                       display: 'flex',
                       alignItems: 'center',
@@ -157,7 +163,7 @@ const SignIn = () => {
           </div>
 
 
-          
+
         </div>}
     </>
   );
