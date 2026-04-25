@@ -25,7 +25,27 @@ function authHeader() {
 }
 
 export let apiCall = async (method, path, payload) => {
-
+  if (process.env.REACT_APP_DECREPT_FLAG ) {
+        const payloadWithTimestamp = {
+            ...payload,
+            timestamp: new Date().toISOString()
+        };
+       payload = {
+            data: payloadWithTimestamp,
+            isEncruption: true
+        };
+       
+        
+        
+        const encryptedDataee = CryptoJS.AES.encrypt(
+            JSON.stringify(payloadWithTimestamp),
+            process.env.REACT_APP_SECRET_KEY_DECREPT
+        ).toString();
+        payload = {
+            data: encryptedDataee,
+            isEncruption: true
+        };
+    }
 
     try {
         const response = await axios({

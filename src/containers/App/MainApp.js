@@ -76,7 +76,7 @@ const MainApp = () => {
   }
 
   return (
-    <PullToRefresh onRefresh={handleRefresh} >
+    // <PullToRE4efresh onRefresh={handleRefresh} >
       <Layout className="gx-app-layout">
         <AppSidebar navStyle={navStyle} />
         <Layout>
@@ -95,7 +95,7 @@ const MainApp = () => {
         </Layout>
         <NotificationContainer position="top-left" />
       </Layout>
-    </PullToRefresh>
+    // </PullToRE4efresh>
   )
 };
 export default MainApp;

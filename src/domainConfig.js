@@ -330,17 +330,17 @@ const domainSettings = {
 
 
   "defult": {
-    title: "2xbet",
+    title: "2xbat",
     favicon: "/favicon.ico",
     logo: "/assets/images/2xbat.png",
-    SOCKET_URL: "https://api.7wickets.pro/",
-    apiurl: "https://api.7wickets.pro/v1/",
-    domainName: "2xbet",
+    SOCKET_URL: "https://api.balaji12.com/",
+    apiurl: "https://api.balaji12.com/v1/",
+    domainName: "2xbat",
     sportFlag: false,
     footerFlag: false,
-    websiteName: "2xbet.co",
+    websiteName: "2xbat.co",
     websiteName2: "",
-    socketDomain: "2xbet.co",
+    socketDomain: "2xbat.co",
     "--nav-dark-bg": "linear-gradient(#000428 0%, #004e92 100%)",
     "--nav-dark-bg-revers": "linear-gradient(#004e92 0%, #000428 100%)",
     noFancyMatchDetails: false,
@@ -363,7 +363,7 @@ const domainSettings = {
 
 
 const domain = window.location.host;
-const settings = domainSettings[domain] || domainSettings["allbets24.com"];
+const settings = domainSettings[domain] || domainSettings["defult"];
 
 Object.entries(settings).forEach(([key, value]) => {
   document.documentElement.style.setProperty(key, value);

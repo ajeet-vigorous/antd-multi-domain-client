@@ -142,13 +142,13 @@ const Topbar = () => {
 
   let userID = JSON.parse(localStorage.getItem("user_id_tvs99"));
 
-  useEffect(() => {
-    if (!userID?.data?.isPasswordChanged) {
-      if (location.pathname !== "/main/changepassword") {
-        history.push("/main/changepassword");
-      }
-    }
-  }, [location, userID, history]);
+  // useEffect(() => {
+  //   if (!userID?.data?.isPasswordChanged) {
+  //     if (location.pathname !== "/main/changepassword") {
+  //       history.push("/main/changepassword");
+  //     }
+  //   }
+  // }, [location, userID, history]);
 
 
   let exposureLocal = JSON.parse(localStorage.getItem("client-wallet-exposure"));
@@ -239,7 +239,7 @@ const Topbar = () => {
         {/* <span>Chips: {Math.abs(clientBalance) % 1 === 0 ?
           Math.abs(clientBalance).toFixed(2) :
           Math.floor(Math.abs(clientBalance) * 100) / 100.00}</span>&nbsp;&nbsp; */}
-        <div className="gx-w-50"></div>
+        {/* <div className="gx-w-50"></div> */}
         <div className="gx-fs-md gx-text-weight-bold gx-text-green-0">
           {(Math.floor(Number(clientBalance) * 100) / 100).toFixed(2)}
           <Link to='/main/pending-bets'>

@@ -43,12 +43,13 @@ const SignIn = () => {
         domainUrl: window.location.origin,
       };
       dispatch(domainSettingByDomain(domainSetting));
-      let userID = JSON.parse(localStorage.getItem("user_id_tvs99"));
-      if (!userID?.data.isPasswordChanged) {
-        history.push("/main/changepassword");
-      } else {
-        history.push("/main/matches");
-      }
+      // let userID = JSON.parse(localStorage.getItem("user_id_tvs99"));
+      // if (!userID?.data.isPasswordChanged) {
+      //   history.push("/main/changepassword");
+      // } else {
+      //   history.push("/main/matches");
+      // }
+      history.push("/main/rules");
 
     }
   }, [authUser, dispatch, history, showMessage]);

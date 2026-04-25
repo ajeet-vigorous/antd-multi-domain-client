@@ -589,46 +589,60 @@ useEffect(() => {
   }, [clientSportsBetsList]);
   ////////////////////-----------------------------placing bets ----------------------//////////////////
   useEffect(() => {
-
-    const maxCoinData = matchDetailsResponse?.maxMinCoins
-      ? JSON.parse(matchDetailsResponse?.maxMinCoins)
-      : {
-        maximum_match_bet: null,
-        minimum_match_bet: null,
-        maximum_session_bet: null,
-        minimum_session_bet: null,
-      };
-
-
-    setminMaxCoins({
-      max: maxCoinData?.maximum_match_bet,
-      min: maxCoinData?.minimum_match_bet,
-    });
-    setSessionCoin({
-      max: maxCoinData?.maximum_session_bet,
-      min: maxCoinData?.minimum_session_bet,
-    });
-
-
-    setIsTieCoin({
-      max: maxCoinData?.maximum_tie_coins > 0 ? maxCoinData?.maximum_tie_coins : maxCoinData?.maximum_match_bet,
-      min: maxCoinData?.minimum_match_bet,
-    });
-
-    setIsTossCoin({
-      max: maxCoinData?.maximum_toss_coins > 0 ? maxCoinData?.maximum_toss_coins : maxCoinData?.maximum_match_bet,
-      min: maxCoinData?.minimum_match_bet,
-    });
-
-    setIsMatchCoin({
-      max: maxCoinData?.maximum_matchOdds_coins > 0 ? maxCoinData?.maximum_matchOdds_coins : maxCoinData?.maximum_match_bet,
-      min: maxCoinData?.minimum_match_bet,
-    });
-
-
-
-  }, [matchDetailsResponse]);
-
+   if (!matchDetailsResponse?.maxMinCoins) return;
+ 
+   let maxCoinData = {};
+ 
+   try {
+     if (typeof matchDetailsResponse.maxMinCoins === "string") {
+       const fixedString = matchDetailsResponse.maxMinCoins.replace(
+         /(\w+):/g,
+         '"$1":'
+       );
+       maxCoinData = JSON.parse(fixedString);
+     } else {
+       maxCoinData = matchDetailsResponse.maxMinCoins;
+     }
+   } catch (err) {
+     console.error("Parse error:", matchDetailsResponse.maxMinCoins);
+     return;
+   }
+ 
+   setminMaxCoins({
+     max: maxCoinData?.maximum_match_bet,
+     min: maxCoinData?.minimum_match_bet,
+   });
+ 
+   setSessionCoin({
+     max: maxCoinData?.maximum_session_bet,
+     min: maxCoinData?.minimum_session_bet,
+   });
+ 
+   setIsTieCoin({
+     max:
+       maxCoinData?.maximum_tie_coins > 0
+         ? maxCoinData?.maximum_tie_coins
+         : maxCoinData?.maximum_match_bet,
+     min: maxCoinData?.minimum_match_bet,
+   });
+ 
+   setIsTossCoin({
+     max:
+       maxCoinData?.maximum_toss_coins > 0
+         ? maxCoinData?.maximum_toss_coins
+         : maxCoinData?.maximum_match_bet,
+     min: maxCoinData?.minimum_match_bet,
+   });
+ 
+   setIsMatchCoin({
+     max:
+       maxCoinData?.maximum_matchOdds_coins > 0
+         ? maxCoinData?.maximum_matchOdds_coins
+         : maxCoinData?.maximum_match_bet,
+     min: maxCoinData?.minimum_match_bet,
+   });
+ }, [matchDetailsResponse]);
+  
   useEffect(() => {
     if (processingBet === false) {
       fetchBetLists();

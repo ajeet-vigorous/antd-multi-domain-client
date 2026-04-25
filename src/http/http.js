@@ -26,14 +26,26 @@ export const betChipsData = {
 };
 
 async function encryptPayload(payload) {
+  const payloadWithTimestamp = {
+    ...payload,
+    timestamp: new Date().toISOString()
+  };
+
   if (process.env.REACT_APP_DECREPT_FLAG) {
     const encryptedData = CryptoJS.AES.encrypt(
-      JSON.stringify(payload),
+      JSON.stringify(payloadWithTimestamp),
       process.env.REACT_APP_SECRET_KEY_DECREPT
     ).toString();
-    return { data: encryptedData };
+
+    return {
+      data: encryptedData,
+      isEncryption: true
+    };
   }
-  return payload;
+  return {
+    data: payloadWithTimestamp,
+    isEncryption: true
+  };
 }
 
 async function decryptResponse(response) {
@@ -65,7 +77,7 @@ const httpGet = async (url, params, isNotify) => {
     const result = await axios({
       method: "GET",
       url: CONST.BACKEND_URL + url,
-      data: { ...params },
+      data: payload,
       headers: headers,
     });
 
@@ -94,7 +106,7 @@ const httpPost = async (url, params, isNotify) => {
     const result = await axios({
       method: "POST",
       url: CONST.BACKEND_URL + url,
-      data: { ...params },
+      data: payload,
       headers: headers,
     });
 
@@ -145,7 +157,7 @@ const httpPatch = async (url, params, isNotify) => {
     const result = await axios({
       method: "PATCH",
       url: CONST.BACKEND_URL + url,
-      data: { ...params },
+      data: payload,
       headers: headers,
     });
 
